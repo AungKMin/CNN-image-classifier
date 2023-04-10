@@ -1,0 +1,29 @@
+# defining the model
+def make_CNN_classifier(n_filters=16, n_outputs=1):
+  Conv2D = functools.partial(tf.keras.layers.Conv2D, activation='relu')
+  MaxPool2D = tf.keras.layers.MaxPool2D
+  BatchNormalization = tf.keras.layers.BatchNormalization
+  Flatten = tf.keras.layers.Flatten
+  Dense = functools.partial(tf.keras.layers.Dense, activation='relu')
+
+  model = tf.keras.Sequential([ 
+    Conv2D(filters=1*n_filters, kernel_size=(5,5),  strides=1, input_shape=(100, 100, 3), kernel_regularizer=tf.keras.regularizers.l2(0.001), padding="valid"),
+    MaxPool2D(pool_size=(2,2)),
+    
+    Conv2D(filters=2*n_filters, kernel_size=(5,5),  strides=1),
+    MaxPool2D(pool_size=(2,2)),
+
+    Conv2D(filters=4*n_filters, kernel_size=(3,3),  strides=1),
+    MaxPool2D(pool_size=(2,2)),
+
+    Flatten(),
+      
+    Dense(256),
+    Dense(n_outputs, activation='sigmoid'),
+  ])
+  return model
+
+CNN_model = make_CNN_classifier(n_filters=32, n_outputs=1)
+
+CNN_model.compile(optimizer='adam', loss=tf.losses.BinaryCrossentropy(), metrics=['accuracy'])
+CNN_model.summary()
